@@ -29,11 +29,11 @@ describe("mytoken deploy", () => {
   });
 
   it("should return 0 totalSupply", async () => {
-    expect(await myTokenC.totalSupply()).equal(0);
+    expect(await myTokenC.totalSupply()).equal(1n * 10n ** 18n);
   });
-  
-  it("should return 0 balance for signer 0", async () => {
+
+  it("should return 1MT balance for signer 0", async () => {
     const signers = await hre.ethers.getSigners();
-    expect(await myTokenC.balanceOf(signers[0].address)).equal(0);
+    expect(await myTokenC.balanceOf(signers[0].address)).equal(1n * 10n ** 18n);
   });
 });
