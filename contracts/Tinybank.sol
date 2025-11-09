@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
-import "./ManagedAccess.sol";
+import "./MultiManagedAccess.sol";
 
 interface IMyToken {
     function transfer(uint256 amount, address to) external;
@@ -11,7 +11,7 @@ interface IMyToken {
     function mint(uint256 amount, address to) external;
 }
 
-contract Tinybank is ManagedAccess {
+contract Tinybank is MultiManagedAccess {
     event Staked(address, uint256 amount);
     event Withdraw(uint256, address);
 
@@ -20,12 +20,13 @@ contract Tinybank is ManagedAccess {
     mapping(address => uint256) public lastClaimedBlock;
     
     uint256 public defaultRewardPerBlock = 1 * 10 ** 18;
-    uint256 rewardPerBlock;
+    uint256 public rewardPerBlock;
 
     mapping(address => uint256) public staked;
     uint256 public totalStaked;
 
-    constructor(IMyToken _stakingToken) ManagedAccess(msg.sender, msg.sender) {
+    constructor(IMyToken _stakingToken, address[] memory _managers) MultiManagedAccess(msg.sender, _managers, _managers.length) {
+        require(_managers.length >= 3, "At least 3 managers required");
         stakingToken = _stakingToken;
         rewardPerBlock = defaultRewardPerBlock;
     }
@@ -40,7 +41,7 @@ contract Tinybank is ManagedAccess {
         _;
     }
 
-    function setRewardPerBlock(uint256 _amount) external onlyManager {
+    function setRewardPerBlock(uint256 _amount) external onlyAllConfirmed {
         rewardPerBlock = _amount;
     }
     

@@ -25,7 +25,7 @@ contract MultiManagedAccess {
     }
 
     function allConfirmed() internal view returns (bool) {
-        for(uint256 i = 0; i < MANAGER_NUMBERS; i++) {
+        for(uint256 i = 0; i < BACKUP_MANAGER_NUMBERS; i++) {
             if(!confirmed[i]) {
                 return false;
             }
@@ -33,12 +33,20 @@ contract MultiManagedAccess {
         return true;
     }       
     function reset() internal {
-        for(uint256 i = 0; i < MANAGER_NUMBERS; i++) {
+        for(uint256 i = 0; i < BACKUP_MANAGER_NUMBERS; i++) {
             confirmed[i] = false;
         }
     }
 
     modifier onlyAllConfirmed() {
+        bool isManager = false;
+        for(uint256 i = 0; i < BACKUP_MANAGER_NUMBERS; i++) {
+            if(manager[i] == msg.sender) {
+                isManager = true;
+                break;
+            }
+        }
+        require(isManager, "You are not a manager");
         require(allConfirmed(), "Not all managers confirmed yet");
         reset();
         _;
@@ -46,7 +54,7 @@ contract MultiManagedAccess {
 
     function confirm() external {
         bool found = false;
-        for(uint256 i = 0; i < MANAGER_NUMBERS; i++) {
+        for(uint256 i = 0; i < BACKUP_MANAGER_NUMBERS; i++) {
             if(manager[i] == msg.sender) {
                 found = true;
                 confirmed[i] = true;
@@ -54,6 +62,6 @@ contract MultiManagedAccess {
             }
         }
 
-        require(found, "You are not one of managers");
+        require(found, "You are not a manager");
     }
 }
