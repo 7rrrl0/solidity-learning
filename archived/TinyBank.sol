@@ -11,9 +11,9 @@ interface IMyToken {
     function mint(uint256 amount, address to) external;
 }
 
-contract Tinybank is ManagedAccess {
-    event Staked(address, uint256 amount);
-    event Withdraw(uint256, address);
+contract TinyBank is ManagedAccess {
+    event Staked(address indexed owner, uint256 amount);
+    event Withdraw(uint256 amount, address indexed to);
 
     IMyToken public stakingToken;
     

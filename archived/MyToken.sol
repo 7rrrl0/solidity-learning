@@ -14,7 +14,7 @@ contract MyToken is ManagedAccess {
     mapping(address => uint256) public balanceOf;
     mapping(address => mapping(address => uint256)) public allowance;
 
-    constructor(
+    constructor( 
         string memory _name,
         string memory _symbol,
         uint8 _decimal,
@@ -34,6 +34,7 @@ contract MyToken is ManagedAccess {
     function transferFrom(address from, address to, uint256 amount) external {
         address spender = msg.sender;
         require(allowance[from][spender] >= amount, "insufficient allowance");
+        require(balanceOf[] >= amount, "insufficient balance");
         allowance[from][spender] -= amount;
         balanceOf[from] -= amount;
         balanceOf[to] += amount;
